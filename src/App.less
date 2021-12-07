@@ -1,0 +1,47 @@
+.App {
+	background-color: #f58b57;
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
+	background-image: url(https://dl.ragestudio.net/mem/texts.png);
+	background-repeat: no-repeat;
+	background-size: cover;
+
+	.countdown {
+		position: absolute;
+		width: 100vw;
+		height: 100vh;
+		display: flex;
+
+		align-items: center;
+		justify-content: center;
+
+		font-size: 5rem;
+		font-weight: bold;
+		color: #fff;
+
+		> div {
+			margin: 20px;
+		}
+
+		.entry {
+            width: 100vw;
+			text-align: center;
+            > div {
+                margin: 10px 0;
+            }
+            .value {
+                font-family: "Impact" !important;
+                backdrop-filter: blur(3px);
+            }
+
+			.text {
+                font-family: "Comic Sans MS" !important;
+				font-size: 1.5rem;
+				font-weight: bold;
+
+                backdrop-filter: blur(10px);
+			}
+		}
+	}
+}
