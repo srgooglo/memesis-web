@@ -78,6 +78,7 @@ export default class App extends React.Component {
 
     return (
       <div className="App">
+        <div className="overlay" />
         <div className="countdown">
           {this.renderCountdown({ days, hours, minutes, seconds })}
         </div>
