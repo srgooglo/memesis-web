@@ -56,8 +56,15 @@ const TrailerViewer = (props) => {
 
   React.useEffect(() => {
     if (ref.current.plyr.on && !configured) {
+      console.debug('Effect')
       ref.current.plyr.on("ended", () => {
         onEnd()
+      })
+      ref.current.plyr.once("ended", () => {
+        onEnd()
+      })
+      ref.current.plyr.on("play", () => {
+        console.debug("PLAYING")
       })
       ref.current.plyr.on("ready", () => {
         ref.current.plyr.play()
@@ -65,7 +72,9 @@ const TrailerViewer = (props) => {
 
       setConfigured(true)
     }
-  }, [configured])
+
+    return 
+  })
 
   return <div className="player">
      <div className="overlay">
@@ -144,8 +153,7 @@ export default class App extends React.Component {
   }
   
   onEndTrailer = () => {
-    // TODO: Toogle transition ANIMATION
-    console.log("TRAILER ENDED")
+    console.debug("onEndTrailer")
     this.toogleTrailerViewed(true)
   }
 
