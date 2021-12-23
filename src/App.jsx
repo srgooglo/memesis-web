@@ -1,16 +1,92 @@
 import React from 'react'
 import moment from 'moment'
-import axios from 'axios'
+import * as antd from "antd"
+import * as Icons from "feather-reactjs"
+import Plyr from 'plyr-react'
+
+import 'plyr-react/dist/plyr.css'
 import './App.less'
+
+const videoSrc = {
+  type: "video",
+  sources: [
+    {
+      src: 'https://dl.ragestudio.net/mem/trailer.mp4',
+      type: 'video/mp4',
+    },
+  ],
+}
+
+const videoOptions = {
+  storage: false,
+  autoplay: true,
+  hideControls: true,
+  muted: true,
+  controls: [],
+}
+
+const TrailerViewer = (props) => {
+  const [configured, setConfigured] = React.useState(false)
+  const [videoMuted, setVideoMuted] = React.useState(true)
+
+  const ref = React.useRef()
+
+  const onEnd = () => {
+    if (typeof props.onEnd === 'function') {
+      return props.onEnd()
+    }else {
+      console.warn('onEnd is not a function')
+    }
+  }
+
+  const onSkip = () => {
+    if (typeof props.onSkip === 'function') {
+      return props.onSkip()
+    }else {
+      console.warn('onSkip is not a function')
+    }
+  }
+
+  const toogleVideoMute = (to = !videoMuted) => {
+    if (ref.current.plyr) {
+      ref.current.plyr.muted = to
+      setVideoMuted(to)
+    }
+  }
+
+  React.useEffect(() => {
+    if (ref.current.plyr.on && !configured) {
+      ref.current.plyr.on("ended", () => {
+        onEnd()
+      })
+      ref.current.plyr.on("ready", () => {
+        ref.current.plyr.play()
+      })
+
+      setConfigured(true)
+    }
+  }, [configured])
+
+  return <div className="player">
+     <div className="overlay">
+          <div className="videoControls">
+            <div>
+              <antd.Button type="link" onClick={() => onSkip()}>Skip</antd.Button>
+            </div>
+            <div>
+              <antd.Button type={videoMuted? "primary" : "link"} onClick={() => toogleVideoMute()}>{videoMuted ?  <Icons.Volume2/> : <Icons.VolumeX/>}</antd.Button>   
+            </div>
+          </div>
+        </div>
+        <Plyr ref={ref} source={videoSrc} options={videoOptions} />
+  </div>
+}
 
 export default class App extends React.Component {
   state = {
+    trailerViewed: false,
     interval: null,
     countdown: null
-  }
-
-  getEventTime = async () => {
-    // const res = await axios.get('http://dl.ragestudio.net/mem/rel.json')
   }
 
   componentDidMount = async () => {
@@ -62,11 +138,26 @@ export default class App extends React.Component {
     })
   }
 
+  toogleTrailerViewed = (to) => {
+    this.setState({ trailerViewed: to ?? !this.state.trailerViewed })
+    this.forceUpdate()
+  }
+  
+  onEndTrailer = () => {
+    // TODO: Toogle transition ANIMATION
+    console.log("TRAILER ENDED")
+    this.toogleTrailerViewed(true)
+  }
+
   render() {
     if (!this.state.countdown) {
       return <div>
         Loading
       </div>
+    }
+
+    if (!this.state.trailerViewed) {
+      return <TrailerViewer onSkip={() => this.onEndTrailer()} onEnd={() => this.onEndTrailer()} />
     }
 
     const countdown = this.state.countdown
@@ -78,9 +169,14 @@ export default class App extends React.Component {
 
     return (
       <div className="App">
-        <div className="overlay" />
+        <div className="overlayBackground" />
         <div className="countdown">
           {this.renderCountdown({ days, hours, minutes, seconds })}
+        </div>
+        <div className="actions">
+          <div>
+            <antd.Button type="link" onClick={() => this.toogleTrailerViewed(false)}>Watch Trailer</antd.Button>
+          </div>
         </div>
       </div>
     )

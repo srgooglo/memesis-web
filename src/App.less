@@ -6,49 +6,89 @@ body {
 	background-color: rgb(0, 0, 0) !important;
 }
 
+.player {
+	svg {
+		margin: 0 !important;
+	}
+
+	.videoControls {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		width: 100vw;
+
+		padding: 10px;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+
+		> div {
+			margin-right: 10px;
+		}
+	}
+
+	.plyr {
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 50;
+
+		width: 100vw;
+		height: 100vh;
+	}
+}
+
+.overlay {
+	position: absolute;
+	z-index: 200;
+
+	width: 100vw;
+	height: 100vh;
+
+	top: 0;
+	right: 0;
+
+	overflow: hidden;
+}
+
 .App {
-	//background-color: #ffffff;
+	> div {
+		user-select: none !important;
+	}
+
+	user-select: none !important;
+
+	background-image: url(https://dl.ragestudio.net/mem/texts.png);
 	background-color: @accentColor;
+
 	width: 100vw;
 	height: 100vh;
 	overflow: hidden;
-	background-image: url(https://dl.ragestudio.net/mem/texts.png);
 	background-repeat: no-repeat;
 	background-size: cover;
-	//opacity: 0;
-	//animation: background-fade 5.1s linear 0.5s;
-	//animation-fill-mode: forwards;
 
-	.overlay {
-		overflow: hidden;
+	.overlayBackground {
+		position: absolute;
+		z-index: 100;
+
 		width: 100vw;
 		height: 100vh;
-		position: absolute;
-		z-index: 1;
+
 		top: 0;
 		right: 0;
-		opacity: 0;
 
-		//animation: glow-splash 4.1s ease-out 0.5s;
-		//animation-fill-mode: forwards;
+		overflow: hidden;
 
-		filter: blur(160px);
-		backface-visibility: hidden;
-		transform: translate3d(0, 0, 0);
-		will-change: contents;
-		background: conic-gradient(
-			from 230.29deg at 51.63% 52.16%,
-			#000000 0deg,
-			#251812 67.5deg,
-			#633b28 198.75deg,
-			#ce764b 251.25deg,
-			#a9623f 301.88deg,
-			#f58b57 360deg
-		);
+		background-color: #000000;
+		opacity: 1;
+
+		animation: fadeOutBackground 4.1s ease-out 2s;
+		animation-fill-mode: forwards;
 	}
 
 	.countdown {
 		position: absolute;
+		z-index: 100;
 		width: 100vw;
 		height: 100vh;
 		display: flex;
@@ -58,7 +98,12 @@ body {
 
 		font-size: 5rem;
 		font-weight: bold;
-		color: #fff;
+		color: transparent;
+
+		animation: fadeInColor 5.1s linear 1s;
+		animation-fill-mode: forwards;
+
+		filter: blur(5px);
 
 		> div {
 			margin: 20px;
@@ -88,59 +133,91 @@ body {
 			}
 		}
 	}
+	
+	.actions {
+		position: fixed;
+		z-index: 100;
+		bottom: 0;
+
+		width: 100vw;
+		height: fit-content;
+
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		
+		padding: 10px;
+
+		border-radius: 8px 8px 0 0;
+		background-color: #000000a8;
+		backdrop-filter: blur(7px);
+
+		opacity: 0;
+
+		animation: fadeIn 1s linear 2s;
+		animation-fill-mode: forwards;
+
+		> div {
+			margin-left: 10px;
+		}
+	}
 }
 
-@keyframes fadeInOpacity {
+@keyframes fadeOutBackground {
 	0% {
-		opacity: 0;
-	}
-	100% {
+		background-color: #000000;
+		color: @accentColor;
 		opacity: 1;
 	}
+	20% {
+		background-color: #251812;
+	}
+	40% {
+		background-color: #633b28;
+	}
+	60% {
+		background-color: #a9623f;
+	}
+	70% {
+		background-color: #ce764b;
+	}
+	80% {
+		background-color: #f58b57;
+	}
+	100% {
+		color: transparent;
+		opacity: 0;
+	}
 }
 
-@keyframes glow-splash {
+@keyframes fadeInColor {
 	0% {
-		opacity: 0;
+		color: transparent;
 		-webkit-animation-timing-function: cubic-bezier(0.74, 0.25, 0.76, 1);
 		animation-timing-function: cubic-bezier(0.74, 0.25, 0.76, 1);
 	}
-
 	15% {
-		opacity: 1;
+		color: #fff;
+		filter: blur(5px);
 		-webkit-animation-timing-function: cubic-bezier(0.12, 0.01, 0.08, 0.99);
 		animation-timing-function: cubic-bezier(0.12, 0.01, 0.08, 0.99);
 	}
 	97% {
-		z-index: 4;
+		color: #fff;
+		filter: blur(0);
 	}
 	100% {
-		z-index: 4;
-		opacity: 0.28;
+		color: #fff;
+		filter: blur(0);
 	}
 }
 
-@keyframes background-fade {
+@keyframes fadeIn {
 	0% {
 		opacity: 0;
-		background-color: #ffffff;
-		-webkit-animation-timing-function: cubic-bezier(0.74, 0.25, 0.76, 1);
-		animation-timing-function: cubic-bezier(0.74, 0.25, 0.76, 1);
 	}
-
-	15% {
-		-webkit-animation-timing-function: cubic-bezier(0.12, 0.01, 0.08, 0.99);
-		animation-timing-function: cubic-bezier(0.12, 0.01, 0.08, 0.99);
-	}
-
-	60% {
-		opacity: 1;
-		//background-color: #f0f2f5;
-		background-color: @accentColor;
-	}
-
 	100% {
 		opacity: 1;
-		background-color: @accentColor;
 	}
 }
