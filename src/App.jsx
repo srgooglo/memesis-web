@@ -1,18 +1,18 @@
-import React from 'react'
-import moment from 'moment'
+import React from "react"
+import moment from "moment"
 import * as antd from "antd"
 import * as Icons from "feather-reactjs"
-import Plyr from 'plyr-react'
+import Plyr from "plyr-react"
 
-import 'plyr-react/dist/plyr.css'
-import './App.less'
+import "plyr-react/dist/plyr.css"
+import "./App.less"
 
 const videoSrc = {
   type: "video",
   sources: [
     {
-      src: 'https://dl.ragestudio.net/mem/trailer.mp4',
-      type: 'video/mp4',
+      src: "https://dl.ragestudio.net/mem/trailer.mp4",
+      type: "video/mp4",
     },
   ],
 }
@@ -32,18 +32,18 @@ const TrailerViewer = (props) => {
   const ref = React.useRef()
 
   const onEnd = () => {
-    if (typeof props.onEnd === 'function') {
+    if (typeof props.onEnd === "function") {
       return props.onEnd()
     }else {
-      console.warn('onEnd is not a function')
+      console.warn("onEnd is not a function")
     }
   }
 
   const onSkip = () => {
-    if (typeof props.onSkip === 'function') {
+    if (typeof props.onSkip === "function") {
       return props.onSkip()
     }else {
-      console.warn('onSkip is not a function')
+      console.warn("onSkip is not a function")
     }
   }
 
@@ -56,7 +56,7 @@ const TrailerViewer = (props) => {
 
   React.useEffect(() => {
     if (ref.current.plyr.on && !configured) {
-      console.debug('Effect')
+      console.debug("Effect")
       ref.current.plyr.on("ended", () => {
         onEnd()
       })
@@ -105,7 +105,7 @@ export default class App extends React.Component {
     let duration = moment.duration(eventTime.diff(currentTime))
 
     const interval = setInterval(() => {
-      duration = moment.duration(duration - 1000, 'milliseconds')
+      duration = moment.duration(duration - 1000, "milliseconds")
 
       this.setState({ countdown: duration })
     }, 1000)
@@ -157,6 +157,12 @@ export default class App extends React.Component {
     this.toogleTrailerViewed(true)
   }
 
+  onClickDownload = () => {
+    const platform = String(navigator.platform).toLowerCase()
+
+    window.open(`https://dl.ragestudio.net/mem/launcher/${platform}/${platform === "win32"? "setup.exe" : "app"}`, "_blank")
+  }
+
   render() {
     if (!this.state.countdown) {
       return <div>
@@ -184,6 +190,9 @@ export default class App extends React.Component {
         <div className="actions">
           <div>
             <antd.Button type="link" onClick={() => this.toogleTrailerViewed(false)}>Watch Trailer</antd.Button>
+          </div>
+          <div>
+            <antd.Button type="link" onClick={() => this.onClickDownload()}>Download Launcher</antd.Button>
           </div>
         </div>
       </div>
