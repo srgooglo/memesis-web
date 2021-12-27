@@ -1,0 +1,1 @@
+docker-compose down && git pull && yarn && yarn build && docker-compose build --force-rm --no-cache && docker-compose up -d && lazydocker
