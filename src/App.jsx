@@ -3,11 +3,12 @@ import moment from "moment"
 import * as antd from "antd"
 import * as Icons from "feather-reactjs"
 import Plyr from "plyr-react"
+import ReactPlayer from "react-player"
 
 import "plyr-react/dist/plyr.css"
 import "./App.less"
 
-const videoSrc = {
+const TrailerVideoSrc = {
   type: "video",
   sources: [
     {
@@ -17,7 +18,7 @@ const videoSrc = {
   ],
 }
 
-const videoOptions = {
+const TrailerVideoOptions = {
   storage: false,
   autoplay: true,
   hideControls: true,
@@ -34,7 +35,7 @@ const TrailerViewer = (props) => {
   const onEnd = () => {
     if (typeof props.onEnd === "function") {
       return props.onEnd()
-    }else {
+    } else {
       console.warn("onEnd is not a function")
     }
   }
@@ -42,7 +43,7 @@ const TrailerViewer = (props) => {
   const onSkip = () => {
     if (typeof props.onSkip === "function") {
       return props.onSkip()
-    }else {
+    } else {
       console.warn("onSkip is not a function")
     }
   }
@@ -73,21 +74,21 @@ const TrailerViewer = (props) => {
       setConfigured(true)
     }
 
-    return 
+    return
   })
 
   return <div className="player">
-     <div className="overlay">
-          <div className="videoControls">
-            <div>
-              <antd.Button type="link" onClick={() => onSkip()}>Skip</antd.Button>
-            </div>
-            <div>
-              <antd.Button type={videoMuted? "primary" : "link"} onClick={() => toogleVideoMute()}>{videoMuted ?  <Icons.Volume2/> : <Icons.VolumeX/>}</antd.Button>   
-            </div>
-          </div>
+    <div className="overlay">
+      <div className="videoControls">
+        <div>
+          <antd.Button type="link" onClick={() => onSkip()}>Skip</antd.Button>
         </div>
-        <Plyr ref={ref} source={videoSrc} options={videoOptions} />
+        <div>
+          <antd.Button type={videoMuted ? "primary" : "link"} onClick={() => toogleVideoMute()}>{videoMuted ? <Icons.Volume2 /> : <Icons.VolumeX />}</antd.Button>
+        </div>
+      </div>
+    </div>
+    <Plyr ref={ref} source={TrailerVideoSrc} options={TrailerVideoOptions} />
   </div>
 }
 
@@ -95,6 +96,7 @@ export default class App extends React.Component {
   state = {
     trailerViewed: false,
     interval: null,
+    reached: false,
     countdown: null
   }
 
@@ -106,6 +108,15 @@ export default class App extends React.Component {
 
     const interval = setInterval(() => {
       duration = moment.duration(duration - 1000, "milliseconds")
+      const isReached = Math.sign(duration._milliseconds) === -1
+
+      if (isReached) {
+        clearInterval(interval)
+        return this.setState({
+          countdown: true,
+          reached: true,
+        })
+      }
 
       this.setState({ countdown: duration })
     }, 1000)
@@ -151,7 +162,7 @@ export default class App extends React.Component {
     this.setState({ trailerViewed: to ?? !this.state.trailerViewed })
     this.forceUpdate()
   }
-  
+
   onEndTrailer = () => {
     console.debug("onEndTrailer")
     this.toogleTrailerViewed(true)
@@ -160,32 +171,25 @@ export default class App extends React.Component {
   onClickDownload = () => {
     const platform = String(navigator.platform).toLowerCase()
 
-    window.open(`https://dl.ragestudio.net/mem/launcher/${platform}/${platform === "win32"? "setup.exe" : "app"}`, "_blank")
+    window.open(`https://dl.ragestudio.net/mem/launcher/${platform}/${platform === "win32" ? "setup.exe" : "app"}`, "_blank")
   }
 
   render() {
-    if (!this.state.countdown) {
-      return <div>
-        Loading
-      </div>
+    if (!this.state.reached && !this.state.countdown) {
+      return null
     }
 
-    if (!this.state.trailerViewed) {
+    if (!this.state.reached && !this.state.trailerViewed) {
       return <TrailerViewer onSkip={() => this.onEndTrailer()} onEnd={() => this.onEndTrailer()} />
     }
 
     const countdown = this.state.countdown
 
-    const days = countdown.days()
-    const hours = countdown.hours()
-    const minutes = countdown.minutes()
-    const seconds = countdown.seconds()
-
     return (
       <div className="App">
         <div className="overlayBackground" />
-        <div className="countdown">
-          {this.renderCountdown({ days, hours, minutes, seconds })}
+        <div className="content">
+          {this.state.reached ? <ReactPlayer url="https://www.twitch.tv/sirgooglo" /> : this.renderCountdown({ days: countdown.days(), hours: countdown.hours(), minutes: countdown.minutes(), seconds: countdown.seconds() })}
         </div>
         <div className="actions">
           <div>
